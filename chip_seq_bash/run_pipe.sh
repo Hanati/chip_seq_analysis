@@ -52,9 +52,9 @@ run_macs2(){
 
 	if [ $control == "NA" ]
 	then
-		$MACS2_BIN callpeak -t ${treat} -n $experiment -q 0.1 -g hs --outdir $OUTPUT_DIR/macs2 --tempdir $OUTPUT_DIR/tmps
+		$MACS2_BIN callpeak -t $OUTPUT_DIR/alignment/${treat}.bam -n $experiment -q 0.1 -g hs --outdir $OUTPUT_DIR/macs2
 	else
-		$MACS2_BIN callpeak -t ${treat} -c $control -n $experiment -q 0.1 -g hs --outdir $OUTPUT_DIR/macs2 --tempdir $OUTPUT_DIR/tmps
+		$MACS2_BIN callpeak -t $OUTPUT_DIR/alignment/${treat}.bam -c $OUTPUT_DIR/alignment/${control}.bam -n $experiment -q 0.1 -g hs --outdir $OUTPUT_DIR/macs2
 	fi
 }
 
@@ -106,15 +106,15 @@ run_main() {
 			if [ $count_e -eq 2 ]
 			then
 			## experiment contains treat and input
-				treat=`cat $input_list_fq | grep $e_name | awk '$2=="T"' | cut -f1`
-				control=`cat $input_list_fq | grep $e_name | awk '$2=="C"' | cut -f1`
+				treat=`cat $input_list_fq | grep $e_name | awk '$2=="T"' | cut -f1 | cut -d'.' -f1`
+				control=`cat $input_list_fq | grep $e_name | awk '$2=="C"' | cut -f1  | cut -d'.' -f1`
 				if [ ! -z $treat ] && [ ! -z $control ]
 				then
 					run_macs2 $treat $control $e_name
 				fi
 			else
 			## experiment contain treat
-				treat=`cat $input_list_fq | grep $e_name | awk '$2=="T"' | cut -f1`
+				treat=`cat $input_list_fq | grep $e_name | awk '$2=="T"' | cut -f1 | cut -d'.' -f1`
 				if [ ! -z $treat ]
 				then
 					run_macs2 $treat "NA" $e_name
