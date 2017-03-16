@@ -1,0 +1,22 @@
+{
+	"WORKDIR":"/home/hanat/WorkStations/massimo_snakemake/SRR4004173/",
+	"treat":"SRR4004173",
+	"input":"",
+
+	"qc_dir":"QC/",
+	"qc_bin":"/usr/bin/fastqc",
+	"qc_con":"/home/hanat/WorkStations/chip_seq_bash/fastqc_config/contaminant_list.txt",
+	"qc_ada":"/home/hanat/WorkStations/chip_seq_bash/fastqc_config/adapter_list.txt",
+	"qc_lim":"/home/hanat/WorkStations/chip_seq_bash/fastqc_config/limits.txt",
+
+	"macs2_bin":"/home/hanat/anaconda2/bin/macs2",
+
+	"sam_bin":"/usr/local/bin/samtools",
+	"bwa_bin":"/usr/local/bin/bwa",
+	"nop_bwa":"2",
+	"ref_gen":"/home/hanat/WorkStations/hg19/hg19_ercc92.fa",
+	"bed_bin":"/usr/local/bin/bedtools",
+	"bed_2_bw":"/home/hanat/WorkStations/ucsc_tools/bedGraphToBigWig",
+	"hg19_chr_size":"/home/hanat/WorkStations/hg19/hg19.chrom.sizes",
+	"decompress":"/bin/zcat"
+}

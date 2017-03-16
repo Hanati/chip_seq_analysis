@@ -16,9 +16,9 @@ then
 fi
 
 ## run process
-QC=1
-MAPPING=1
-PEAKCALLING=0
+QC=0
+MAPPING=0
+PEAKCALLING=1
 
 ## Tools Sepecification
 FASTQC_BIN=/usr/bin/fastqc
