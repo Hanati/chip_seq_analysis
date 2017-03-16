@@ -14,7 +14,7 @@ workdir:config['WORKDIR']
 
 rule all:
 	input:
-		peak_file='macs2/'+config['macs2_experiment']+'_peaks.narrowPeak',
+		peak_anno='macs2/'+config['macs2_experiment']+'_narrowPeak.anno',
 		bw_file=expand('bigwig/{sample}.bw',sample=config['data'].values())
 rule QC:
 	input:
@@ -53,3 +53,10 @@ rule peakCalling:
 		peak_file='macs2/'+config['macs2_experiment']+'_peaks.narrowPeak'
 	shell:
 		"""{config[macs2_bin]} callpeak -t {input.treat_file} -c {input.input_file} -n {config[treat]} -q 0.1 -g hs --outdir macs2"""
+rule peakAnnotation:
+	input:
+		peak_file='macs2/'+config['macs2_experiment']+'_peaks.narrowPeak'
+	output:
+		peak_anno='macs2/'+config['macs2_experiment']+'_narrowPeak.anno'
+	shell:
+		"""{config[bed_bin]} sort -i {input.peak_file} | {config[bed_bin]} closest -d -a - -b {config[hg19_anno]} >{output.peak_anno}"""

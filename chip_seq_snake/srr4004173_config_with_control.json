@@ -20,5 +20,6 @@
 	"bed_bin":"/usr/local/bin/bedtools",
 	"bed_2_bw":"/home/hanat/WorkStations/ucsc_tools/bedGraphToBigWig",
 	"hg19_chr_size":"/home/hanat/WorkStations/hg19/hg19.chrom.sizes",
+	"hg19_anno":"/home/hanat/WorkStations/hg19/gencode.v19.annotation_plain.bed",
 	"decompress":"/bin/zcat"
 }
