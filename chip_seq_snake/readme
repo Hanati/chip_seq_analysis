@@ -1,0 +1,10 @@
+how to
+
+0) before using the sakefile, change the json configration file
+
+1) snakefile for data with no input
+snakemake -s Snakefile_no_control --configfile srr4004173_config_no_control.json
+
+2) snakefile for data with input
+snakemake -s Snakefile_with_control --configfile srr4004173_config_with_control.json
+

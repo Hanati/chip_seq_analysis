@@ -30,16 +30,21 @@ rule align:
 	shell:
 		"""{config[decompress]} -c {input.fq_file} | {config[bwa_bin]} mem -t {config[nop_bwa]} -T 0 -L 0 {config[ref_gen]} - | {config[sam_bin]} view -Shu - | {config[sam_bin]} sort -T tmps/{wildcards.sample} -o - - | {config[sam_bin]} rmdup -s - - >{output.aln_file}"""
 
-rule bam2wig:
+
+rule bam2bedgraph:
 	input:
 		bam_file='alignment/{sample}.bam'
 	output:
-		bg_file='bigwig/{sample}.bg',
+		bg_file='bigwig/{sample}.bg'
+	shell:
+		"""{config[bed_bin]} genomecov -bga -ibam {input.bam_file} | egrep 'chr[0-9XY]' | grep -v "_" | {config[bed_bin]} sort -i - >{output.bg_file}"""
+rule bedgraph2bigwig:
+	input:
+		bg_file='bigwig/{sample}.bg'
+	output:
 		wig_file='bigwig/{sample}.bw'
 	shell:
-		"""{config[bed_bin] genomecov -bga -ibam {input.bam_file} >{output.bg_file};
-		{config[bed_2_bw]} {output.bg_file} {config[hg19_chr_size]} {output.wig_file};
-		rm {output.bg_file}"""
+		"""{config[bed_2_bw]} {input.bg_file} {config[hg19_chr_size]} {output.wig_file} """
 rule peakCalling:
 	input:
 		treat_file='alignment/'+config['data']['treat']+'.bam',
