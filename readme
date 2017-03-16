@@ -1,0 +1,6 @@
+chip seq analysis pipeline
+
+1) bash version
+
+2) snakemake version
+## mainly focusing on snakemake version, due to its simplicity.
