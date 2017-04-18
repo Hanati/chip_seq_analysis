@@ -2,6 +2,7 @@
 	"WORKDIR":"/home/hanat/WorkStations/massimo_snakemake/SRR4004173/",
 	"treat":"SRR4004173",
 	"input":"",
+	"macs2_experiment":"SRR4004173",
 
 	"qc_dir":"QC/",
 	"qc_bin":"/usr/bin/fastqc",
@@ -10,6 +11,9 @@
 	"qc_lim":"/home/hanat/WorkStations/chip_seq_bash/fastqc_config/limits.txt",
 
 	"macs2_bin":"/home/hanat/anaconda2/bin/macs2",
+	"homer_annotate":"annotatePeaks.pl",
+	"homer_makeTag":"makeTagDirectory",
+	"homer_tags":"tags",
 
 	"sam_bin":"/usr/local/bin/samtools",
 	"bwa_bin":"/usr/local/bin/bwa",

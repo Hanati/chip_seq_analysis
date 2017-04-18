@@ -1,26 +1,25 @@
 
 import os
-if not os.path.exists(config['WORKDIR']+'/QC'):
-	os.makedirs(config['WORKDIR']+'/QC')
-if not os.path.exists(config['WORKDIR']+'/alignment'):
-	os.makedirs(config['WORKDIR']+'/alignment')
-if not os.path.exists(config['WORKDIR']+'/tmps'):
-	os.makedirs(config['WORKDIR']+'/tmps')
-if not os.path.exists(config['WORKDIR']+'/macs2'):
-	os.makedirs(config['WORKDIR']+'/macs2')
-if not os.path.exists(config['WORKDIR']+'/bigwig'):
-	os.makedirs(config['WORKDIR']+'/bigwig')
+folders=['/QC','/alignment','/tmps','/macs2','/bigwig','/tags','/results']
+for folder in folders:
+	if not os.path.exists(config['WORKDIR']+folder):
+		os.makedirs(config['WORKDIR']+folder)
+
 workdir:config['WORKDIR']
 
 rule all:
 	input:
-		peak_anno='macs2/'+config['macs2_experiment']+'_narrowPeak.anno',
+		peak_anno='results/'+config['macs2_experiment']+'_narrowPeak.anno',
+		peak_hist='results/'+config['macs2_experiment']+'_peaks_table.txt',
+		peak_heat='results/'+config['macs2_experiment']+'_peaks_heat.txt',
 		bw_file=expand('bigwig/{sample}.bw',sample=config['data'].values())
 rule QC:
 	input:
 		fq_file='raw/{sample}.fastq.gz'
 	output:
 		qc_file='QC/{sample}_fastqc.html'
+	shell:
+		"""{config[qc_bin]} -o {config[qc_dir]} -c {config[qc_con]} -a {config[qc_ada]} -l {config[qc_lim]} {input.fq_file}"""
 rule align:
 	input:
 		fq_file='raw/{sample}.fastq.gz',
@@ -30,7 +29,13 @@ rule align:
 	shell:
 		"""{config[decompress]} -c {input.fq_file} | {config[bwa_bin]} mem -t {config[nop_bwa]} -T 0 -L 0 {config[ref_gen]} - | {config[sam_bin]} view -Shu - | {config[sam_bin]} sort -T tmps/{wildcards.sample} -o - - | {config[sam_bin]} rmdup -s - - >{output.aln_file}"""
 
-
+rule makeTag:
+	input:
+		bam_file='alignment/{sample}.bam'
+	output:
+		out_folder='tags/{sample}'
+	shell:
+		"""{config[homer_makeTag]} {output.out_folder} {input.bam_file}"""
 rule bam2bedgraph:
 	input:
 		bam_file='alignment/{sample}.bam'
@@ -47,16 +52,36 @@ rule bedgraph2bigwig:
 		"""{config[bed_2_bw]} {input.bg_file} {config[hg19_chr_size]} {output.wig_file} """
 rule peakCalling:
 	input:
+		treat_tag='tags/'+config['data']['treat'],
+		input_tag='tags/'+config['data']['input'],
 		treat_file='alignment/'+config['data']['treat']+'.bam',
 		input_file='alignment/'+config['data']['input']+'.bam'
 	output:
 		peak_file='macs2/'+config['macs2_experiment']+'_peaks.narrowPeak'
 	shell:
-		"""{config[macs2_bin]} callpeak -t {input.treat_file} -c {input.input_file} -n {config[treat]} -q 0.1 -g hs --outdir macs2"""
+		"""{config[macs2_bin]} callpeak -t {input.treat_file} -c {input.input_file} -n {config[macs2_experiment]} -q 0.1 -g hs --outdir macs2"""
 rule peakAnnotation:
 	input:
 		peak_file='macs2/'+config['macs2_experiment']+'_peaks.narrowPeak'
 	output:
-		peak_anno='macs2/'+config['macs2_experiment']+'_narrowPeak.anno'
+		peak_anno='results/'+config['macs2_experiment']+'_narrowPeak.anno'
 	shell:
-		"""{config[bed_bin]} sort -i {input.peak_file} | {config[bed_bin]} closest -d -a - -b {config[hg19_anno]} >{output.peak_anno}"""
+		"""{config[homer_annotate]} {input.peak_file} hg19 >{output.peak_anno}"""
+rule tss_table:
+	input:
+		peak_file='macs2/'+config['macs2_experiment']+'_peaks.narrowPeak',
+		tag_treat='tags/'+config['data']['treat'],
+		tag_input='tags/'+config['data']['input']
+	output:
+		peak_hist='results/'+config['macs2_experiment']+'_peaks_table.txt'
+	shell:
+		"""{config[homer_annotate]} {input.peak_file} hg19 -size 6000 -hist 25 -d {input.tag_treat} {input.tag_input} >{output.peak_hist}"""
+rule heatmap_table:
+	input:
+		peak_file='macs2/'+config['macs2_experiment']+'_peaks.narrowPeak',
+		tag_treat='tags/'+config['data']['treat'],
+		tag_input='tags/'+config['data']['input']
+	output:
+		peak_heat='results/'+config['macs2_experiment']+'_peaks_heat.txt'
+	shell:
+		"""{config[homer_annotate]} {input.peak_file} hg19 -size 6000 -hist 25 -ghist -d {input.tag_treat} {input.tag_input} >{output.peak_heat}"""

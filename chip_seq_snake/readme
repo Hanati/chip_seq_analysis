@@ -1,4 +1,17 @@
-how to
+## pre requirement
+
+1) tools 
+BWA (mapper)
+SAMTOOLS (for sorting)
+MACS2 (peak calling)
+HOMER (annotation and tables)
+
+2) genome index for mapping
+
+the index steps is not included, i think it is better that way.
+
+
+## how to
 
 0) before using the sakefile, change the json configration file
 
