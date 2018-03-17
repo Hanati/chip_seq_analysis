@@ -1,3 +1,0 @@
-SRR4004156.fastq.gz	T	d0_rep1_h3k27ac_srx2004303
-SRR4004164.fastq.gz	T	RPMI_1h_rep2_h3k27ac_srx2004311
-SRR4004173.fastq.gz	T	LPS_d6_rep2_h3k27ac_srx2004320
